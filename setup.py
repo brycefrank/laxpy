@@ -1,0 +1,11 @@
+from setuptools import setup
+
+setup(
+    name = 'laxpy',
+    version = laxpy.__version__,
+    description = 'A Python API for .lax files',
+    license = 'MIT',
+    author = 'Bryce Frank',
+    author_email = 'bfrank70@gmail.com',
+    url = 'https://github.com/brycefrank/laxpy'
+)
