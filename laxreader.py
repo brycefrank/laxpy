@@ -4,48 +4,46 @@ import numpy as np
 
 lax_path = 'data/44123F3324.lax'
 
-# Starting at 15 is removing the header information
-def read_lax(lax_path):
-    stream = open(lax_path, 'rb')
-    ints = []
-    for i in range(15, 20570):
-        stream.seek(i*4)
-        unpack = struct.unpack('I', stream.read(4))[0]
-        ints.append(unpack)
+class LAXParser:
+    """A class for parsing a .lax file"""
+    def __init__(self, path):
 
-    return np.array(ints)
+        stream = open(path, 'rb')
+        self.parsed_bytes = []
 
-# We need to "build" the structure of the lax file using the 3rd element of ints
+        for i in range(0, 20570):
+            stream.seek(i*4)
+            unpack = struct.unpack('I', stream.read(4))[0]
+            self.parsed_bytes.append(unpack)
 
-ints = read_lax(lax_path)
+        self.number_cells = self.parsed_bytes[15]
 
-# Number of intervals in first cell
-n0 = ints[2]
-n0_int_ind = 4
+    @property
+    def cell_dict(self):
+        # starting position of intervals for first cell
+        start_pos = 19 # Index of first interval
+        n = self.parsed_bytes[17] # The number of intervals
 
-# starting position of intervals for first cell
-i=0
-start_pos = 4 # Index of first interval
-n = ints[2] # The number of intervals
+        cell_dict = {}
+        for i in range(self.number_cells-1): #for now
+            cell_intervals = self.parsed_bytes[start_pos:start_pos + n * 2]
+            cell_id = self.parsed_bytes[start_pos-3]
+            cell_dict[cell_id] = cell_intervals
 
-cell_dict = {}
+            start_pos = (start_pos + n*2 + 3)
+            n = self.parsed_bytes[start_pos - 2]
 
-while i < 477: #for now
-    cell_intervals = ints[start_pos:start_pos + n * 2]
-    cell_id = ints[start_pos-3]
+        return cell_dict
 
-    cell_dict[cell_id] = cell_intervals
+    def create_indices(self):
+        print()
 
-    start_pos = (start_pos + n*2 + 3)
-    n = ints[start_pos - 2]
-    #start_pos = start_pos + n * 2
-    #print(start_pos)
-    #n = ints[start_pos - 2]
-    i+=1
+lax = LAXParser(lax_path)
 
-print(list(cell_dict.keys()))
+a = np.array(list(lax.cell_dict.keys()))
+a.sort()
 
-
+print(a)
 
 
 
