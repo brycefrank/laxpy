@@ -11,18 +11,20 @@ class LAXParser:
         self.parsed_bytes = []
 
         # TODO get rid of hard-coded positions?
+        # TODO also the loops are silly
         self.bbox = []
         for i in range(9, 13):
             stream.seek(i*4)
             unpack = struct.unpack('f', stream.read(4))[0]
             self.bbox.append(unpack)
 
-        # 20570
-        for i in range(0, 20570):
+        stream.seek(15 * 4)
+        self.number_cells = struct.unpack('I', stream.read(4))[0]
+
+        for i in range(0, np.int(os.stat(path).st_size/4)):
             stream.seek(i*4)
             unpack = struct.unpack('I', stream.read(4))[0]
             self.parsed_bytes.append(unpack)
-        self.number_cells = self.parsed_bytes[15]
 
     def header(self):
         pass
@@ -31,9 +33,9 @@ class LAXParser:
     def cell_dict(self):
         # starting position of intervals for first cell
         start_pos = 19 # Index of first interval
-        n = self.parsed_bytes[17] # The number of intervals
 
         cell_dict = {}
+        n = self.parsed_bytes[17] # The number of intervals of the first cell
         for i in range(self.number_cells-1): #for now
             cell_intervals = self.parsed_bytes[start_pos:start_pos + n * 2]
             cell_id = self.parsed_bytes[start_pos-3]
