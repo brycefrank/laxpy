@@ -7,7 +7,7 @@ class LAXTree:
     """
     def __init__(self, lax_parser):
         self.lax_parser = lax_parser
-        self.max_index = np.max(list(self.lax_parser.cell_dict.keys()))
+        self.max_index = np.max(list(self.lax_parser.cells.keys()))
 
     @property
     def tree_level_sizes(self):
@@ -94,7 +94,7 @@ class LAXTree:
 
 
         fig, ax = plt.subplots(1)
-        for i in self.lax_parser.cell_dict.keys():
+        for i in self.lax_parser.cells.keys():
             bbox = self.get_cell_bbox(i)
             rect = patches.Rectangle((bbox[0], bbox[2]), (bbox[1] - bbox[0])*2, (bbox[3] - bbox[2])*2, edgecolor='black', facecolor='none', label=i)
             ax.annotate(i, (bbox[0], bbox[2]))

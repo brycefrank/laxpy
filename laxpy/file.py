@@ -30,7 +30,7 @@ class LAXParser:
         pass
 
     @property
-    def cell_dict(self):
+    def cells(self):
         # starting position of intervals for first cell
         start_pos = 19 # Index of first interval
 
@@ -49,7 +49,7 @@ class LAXParser:
     def create_indices(self, cell_index):
         indices = []
         i = 0
-        bounds = self.cell_dict[cell_index]
+        bounds = self.cells[cell_index]
         while i < len(bounds):
             indices.append(np.arange(bounds[i], bounds[i + 1] + 1))
             i += 2

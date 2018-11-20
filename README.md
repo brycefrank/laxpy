@@ -13,3 +13,19 @@ Status: `laxpy` is currently under development.
 
 
 **laxpy is in a development phase** with version 0.1.0 planned for December, 2018
+
+## Example
+
+```{python}
+from laxpy import IndexedLAS
+
+my_las = IndexedLAS('my_las.las')
+
+# Return all points in the quad tree cell with index 14
+my_las.query_cell(14)
+
+## FORTHCOMING ##
+my_las.query_bounding_box()
+my_las.query_polygon()
+#etc.
+```

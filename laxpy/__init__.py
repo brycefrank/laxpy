@@ -4,3 +4,4 @@ __version__ = '0.0.1'
 
 from laxpy import file
 from laxpy import tree
+from laxpy.query import IndexedLAS
