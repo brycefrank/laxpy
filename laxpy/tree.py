@@ -2,8 +2,9 @@ import numpy as np
 
 class LAXTree:
     """
-    Really a proto-quadtree that can find the "path" of a given cell index to the root of the tree. This provides the \
-    position of the cell in 2-dimensional space. An untested theory that this is how .lax indices are used.
+    This class constructs the structure of the quadtree described by the `.lax` file.
+
+    :param lax_parser: A `LAXParser` object.
     """
     def __init__(self, lax_parser):
         self.lax_parser = lax_parser
@@ -11,6 +12,9 @@ class LAXTree:
 
     @property
     def tree_level_sizes(self):
+        """
+        :return: A list of level sizes, where size describes the number of potential cells contained in a given level.
+        """
         level_sizes = []
 
         i=0
@@ -24,16 +28,28 @@ class LAXTree:
 
     @property
     def level_edges(self):
+        """
+        :return: A dictionary of level_index: (left_edge, right_edge) key, value pairs. An edge describes the index
+        of a cell that is either the "left most" or "right most" cell in a given level, provided that the cell indices
+        are written in order.
+        """
         left_edge = np.cumsum(self.tree_level_sizes)
         right_edge = left_edge*4
         return {k + 1: v for k, v in enumerate(zip(left_edge, right_edge))}
 
     def get_cell_level_edges(self, cell_index):
-        for level, edges in self.level_edges.items():
+        """
+        :param cell_index: A cell_index to get the edges for.
+        :return: A tuple (level_index, edges) that describes the left edge and right edge for a given `cell_index`.
+        """
+        for level_index, edges in self.level_edges.items():
             if cell_index >= edges[0] and cell_index <= edges[1]:
-                return level, edges
+                return level_index, edges
 
     def get_parent_cell(self, cell_index):
+        """
+        :return: Returns the parent cell_index for an input `cell_index`.
+        """
         cell_level, cell_edges = self.get_cell_level_edges(cell_index)
         lb = cell_edges[0]
         offset = (cell_index - lb) + 1
@@ -49,8 +65,8 @@ class LAXTree:
     def trace_back(self, cell_index):
         """
         Finds the "path" of a cell index back to the root. Used to position the cell in geographic space (later)
-        :param cell_index:
-        :return:
+        :param cell_index: A cell_index to get the trace_back of.
+        :return: A list of cell indices that represents the `cell_index`'s lineage.
         """
         trace = []
         while cell_index != 0:
@@ -61,8 +77,9 @@ class LAXTree:
 
     def get_cell_bbox(self, cell_index):
         """
-        Positions the cell in 2 dimensional space
-        :return:
+        Positions the cell in 2 dimensional space.
+
+        :return: A length-4 tuple bounding box (minx, maxx, miny, maxy).
         """
         trace = self.trace_back(cell_index)
 
@@ -90,6 +107,9 @@ class LAXTree:
 
     @property
     def cell_polygons(self):
+        """
+        :return: A dictionary of cell_index: polygon pairs where `polygon` is of type `shapely.geometry.Polygon`
+        """
         from shapely.geometry import Polygon
 
         polygons = {}
@@ -103,7 +123,6 @@ class LAXTree:
     def plot(self):
         import matplotlib.pyplot as plt
         import matplotlib.patches as patches
-
 
         fig, ax = plt.subplots(1)
         for i in self.lax_parser.cells.keys():

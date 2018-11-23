@@ -7,6 +7,12 @@ from shapely.geometry import Point, Polygon
 
 class IndexedLAS(File):
     """
+    The main interface for interacting with indexed `.las` files. An `IndexedLAS` wraps a `laspy.file.File`
+    and thereby has all of its functionality. When this class is initialized it checks if an existing `.lax` file that
+    matches the name of the input `.las` file exists in the same directory. If not such file exists please use `lasindex`
+    to create a matching `.lax` file.
+
+    :param path: The path of a `.las` file to index.
     """
 
     def __init__(self, path):
@@ -24,37 +30,40 @@ class IndexedLAS(File):
         self.parser = file.LAXParser(self.lax_path)
         self.tree = tree.LAXTree(self.parser)
 
-    def query_cell(self, cell_index):
+    def _query_cell(self, cell_index):
         """
-        Returns the point of a given cell index.
+        Returns the points of a given cell index. This is generally used internally.
 
-        :param cell_index:
+        :param cell_index: The index of a quadtree cell.
         :return:
         """
 
         # TODO if iterable then merge the intervals (may need a separate function)
-        point_indices = self.parser.create_indices(cell_index)
+        point_indices = self.parser.create_point_indices(cell_index)
         return self.points[point_indices]
 
     # TODO how to handle clipping? Leave it up to the user? Include pyfor's clipping function?
-    def query_bounding_box(self, bbox):
-        minx, maxx, miny, maxy = bbox
-        bbox_polygon = Polygon([(minx, miny), (minx, maxy), (maxx, maxy), (maxx, miny)])
-
-        for cell_index, polygon in self.tree.cell_polygons.items():
-            if polygon.intersects(bbox_polygon):
-                print(self.query_cell(cell_index))
-
-        pass
 
     def query_polygon(self, q_polygon):
         for cell_index, polygon in self.tree.cell_polygons.items():
             if polygon.intersects(q_polygon):
-                print(self.query_cell(cell_index))
+                print(self._query_cell(cell_index))
+
+    def query_bounding_box(self, bbox):
+        """
+
+        :param bbox: A an iterable of bounding box coordinates in the format (minx, maxx, miny, maxy).
+        """
+
+        minx, maxx, miny, maxy = bbox
+        bbox_polygon = Polygon([(minx, miny), (minx, maxy), (maxx, maxy), (maxx, miny)])
+        self.query_polygon(bbox_polygon)
+
+
 
     def query_point(self, x, y):
         # TODO could a point ever return more than one cell?
         point = Point(x, y)
         for cell_index, polygon in self.tree.cell_polygons.items():
             if polygon.contains(point):
-                self.query_cell(cell_index)
+                self._query_cell(cell_index)
