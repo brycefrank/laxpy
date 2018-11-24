@@ -30,6 +30,7 @@ class LAXParser:
             self.parsed_bytes.append(unpack)
 
     def header(self):
+        raise NotImplementedError('To be implemented.')
         pass
 
     @property
@@ -39,6 +40,8 @@ class LAXParser:
         """
 
         # Index of first interval
+        start_pos = 19
+
         cell_dict = {}
 
         n = self.parsed_bytes[17] # The number of intervals of the first cell

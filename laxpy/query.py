@@ -2,8 +2,9 @@
 from laspy.file import File
 import os.path
 import ntpath
-from laxpy import file, tree
+from laxpy import file, tree, clip
 from shapely.geometry import Point, Polygon
+import numpy as np
 
 class IndexedLAS(File):
     """
@@ -42,12 +43,24 @@ class IndexedLAS(File):
         point_indices = self.parser.create_point_indices(cell_index)
         return self.points[point_indices]
 
-    # TODO how to handle clipping? Leave it up to the user? Include pyfor's clipping function?
-
     def query_polygon(self, q_polygon):
+        point_indices = []
         for cell_index, polygon in self.tree.cell_polygons.items():
             if polygon.intersects(q_polygon):
-                print(self._query_cell(cell_index))
+                point_indices.append(self.parser.create_point_indices(cell_index))
+
+        point_indices = np.unique(np.concatenate(point_indices))
+
+        x_scale, y_scale, z_scale = self.header.scale
+        x_off, y_off, z_off = self.header.offset
+
+        x = (x_scale * self.points[point_indices]['point']['X']) + x_off
+        y = (y_scale * self.points[point_indices]['point']['Y']) + y_off
+
+        keep = clip.ray_trace(x, y, q_polygon)
+
+        return self.points[point_indices[keep]]
+
 
     def query_bounding_box(self, bbox):
         """
@@ -57,9 +70,7 @@ class IndexedLAS(File):
 
         minx, maxx, miny, maxy = bbox
         bbox_polygon = Polygon([(minx, miny), (minx, maxy), (maxx, maxy), (maxx, miny)])
-        self.query_polygon(bbox_polygon)
-
-
+        return self.query_polygon(bbox_polygon)
 
     def query_point(self, x, y):
         # TODO could a point ever return more than one cell?
