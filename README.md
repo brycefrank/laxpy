@@ -39,3 +39,4 @@ my_las.query_bounding_box((405000, 405300, 3276400, 3276450))
 # IndexedLAS inherits from laspy.file.File
 print(my_las.points)
 ```
+
