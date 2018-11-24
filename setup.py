@@ -11,5 +11,4 @@ setup(
     url = 'https://github.com/brycefrank/laxpy',
     packages = ['laxpy', 'laxpytest'],
     data = [('laxpytest/data'), ['test.las', 'test.lax']],
-    install_requires = ['laspy', 'shapely', 'numpy', 'numba']
 )
