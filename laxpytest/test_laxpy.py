@@ -34,3 +34,24 @@ class LAXTreeTestCase(unittest.TestCase):
 
     def test_trace_back(self):
         self.assertListEqual(self.test_tree.trace_back(14), [(3,2), (0,3)])
+
+    def test_get_cell_bbox(self):
+        self.assertEqual(self.test_tree.get_cell_bbox(14), (405020.0, 405060.0,
+                                                       3276400.0, 3276440.0))
+
+    def test_cell_polygons(self):
+        self.test_tree.cell_polygons
+
+class IndexedLASTestCase(unittest.TestCase):
+    def setUp(self):
+        self.test_ix_las = IndexedLAS(test_las)
+
+    def test_query_cell(self):
+        self.assertEqual(len(self.test_ix_las._query_cell(14)), 67814)
+
+    def test_query_polygon(self):
+        from shapely.geometry import Polygon
+        minx, maxx, miny, maxy = (405000, 405300, 3276400, 3276450)
+        test_poly = Polygon([(minx, miny), (minx, maxy), (maxx, maxy), (maxx, miny)])
+        self.assertEqual(len(self.test_ix_las.query_polygon(test_poly)), 51841)
+

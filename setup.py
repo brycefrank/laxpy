@@ -1,4 +1,5 @@
 from setuptools import setup
+import laxpy
 
 setup(
     name = 'laxpy',
@@ -7,5 +8,7 @@ setup(
     license = 'MIT',
     author = 'Bryce Frank',
     author_email = 'bfrank70@gmail.com',
-    url = 'https://github.com/brycefrank/laxpy'
+    url = 'https://github.com/brycefrank/laxpy',
+    packages = ['laxpy', 'laxpytest'],
+    data = [('laxpytest/data'), ['test.las', 'test.lax']]
 )
