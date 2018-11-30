@@ -88,6 +88,19 @@ class LAXTree:
 
         return((minx, minx+x_width, miny, miny + y_width))
 
+    @property
+    def cell_polygons(self):
+        from shapely.geometry import Polygon
+
+        for index, bbox in self.lax_parser.cells:
+            # Instantiate Polygon, store in dictionary with cell index
+
+
+            pass
+
+
+
+
     def plot(self):
         import matplotlib.pyplot as plt
         import matplotlib.patches as patches
