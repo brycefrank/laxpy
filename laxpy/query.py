@@ -53,7 +53,7 @@ class IndexedLAS(File):
         out_points = points['point'][other_columns].copy()
         return append_fields(out_points, ('x', 'y', 'z'), (x, y, z))
 
-    def query_cell(self, cell_index, scale=False):
+    def _query_cell(self, cell_index, scale=False):
         """
         Returns the points of a given cell index. This is generally used internally.
 
@@ -62,7 +62,7 @@ class IndexedLAS(File):
         :return:
         """
 
-        point_indices = self.parser.create_indices(cell_index)
+        point_indices = self.parser.create_point_indices(cell_index)
 
         if scale:
             return self._scale_points(self.points[point_indices])

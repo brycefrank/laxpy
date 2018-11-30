@@ -6,9 +6,12 @@ def ray_trace(x, y, poly):
     A numba implementation of the ray tracing algorithm.
     :param x: A 1D numpy array of x coordinates.
     :param y: A 1D numpy array of y coordinates.
-    :param poly: The coordinates of a polygon as a numpy array (i.e. from geo_json['coordinates']
+    :param poly: A shapely polygon.
     :return:
     """
+
+    poly = np.array(poly.exterior.coords)
+
     @vectorize([bool_(float64, float64)])
     def ray(x, y):
         # where xy is a coordinate
