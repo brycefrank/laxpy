@@ -4,9 +4,18 @@ import os.path
 import ntpath
 from laxpy import file, tree
 from numpy.lib.recfunctions import append_fields
+from laxpy import file, tree, clip
+from shapely.geometry import Point, Polygon
+import numpy as np
 
 class IndexedLAS(File):
     """
+    The main interface for interacting with indexed `.las` files. An `IndexedLAS` wraps a `laspy.file.File`
+    and thereby has all of its functionality. When this class is initialized it checks if an existing `.lax` file that
+    matches the name of the input `.las` file exists in the same directory. If not such file exists please use `lasindex`
+    to create a matching `.lax` file.
+
+    :param path: The path of a `.las` file to index.
     """
 
     def __init__(self, path):
@@ -46,7 +55,7 @@ class IndexedLAS(File):
 
     def query_cell(self, cell_index, scale=False):
         """
-        Returns the point of a given cell index.
+        Returns the points of a given cell index. This is generally used internally.
 
         :param cell_index:
         :param scale: Scale the output points using the header?
@@ -60,18 +69,38 @@ class IndexedLAS(File):
         else:
             return self.points[point_indices]
 
-    # TODO how to handle clipping? Leave it up to the user? Include pyfor's clipping function?
-    def query_bounding_box(self):
-        pass
+    def query_polygon(self, q_polygon):
+        point_indices = []
+        for cell_index, polygon in self.tree.cell_polygons.items():
+            if polygon.intersects(q_polygon):
+                point_indices.append(self.parser.create_point_indices(cell_index))
 
-    def query_polygon(self):
-        pass
+        point_indices = np.unique(np.concatenate(point_indices))
 
-    def query_circle(self):
-        pass
+        x_scale, y_scale, z_scale = self.header.scale
+        x_off, y_off, z_off = self.header.offset
 
-    def query_point(self):
-        pass
+        x = (x_scale * self.points[point_indices]['point']['X']) + x_off
+        y = (y_scale * self.points[point_indices]['point']['Y']) + y_off
 
-    def other_func(self):
-        pass
+        keep = clip.ray_trace(x, y, q_polygon)
+
+        return self.points[point_indices[keep]]
+
+
+    def query_bounding_box(self, bbox):
+        """
+
+        :param bbox: A an iterable of bounding box coordinates in the format (minx, maxx, miny, maxy).
+        """
+
+        minx, maxx, miny, maxy = bbox
+        bbox_polygon = Polygon([(minx, miny), (minx, maxy), (maxx, maxy), (maxx, miny)])
+        return self.query_polygon(bbox_polygon)
+
+    def query_point(self, x, y):
+        # TODO could a point ever return more than one cell?
+        point = Point(x, y)
+        for cell_index, polygon in self.tree.cell_polygons.items():
+            if polygon.contains(point):
+                self._query_cell(cell_index)

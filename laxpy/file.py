@@ -1,11 +1,14 @@
 import struct
-import laspy
 import numpy as np
 import os
 import subprocess
 
 class LAXParser:
-    """A class for parsing a .lax file"""
+    """
+    Parses a `.lax` file and generates point index intervals.
+
+    :param path: The path of the input `.lax` file.
+    """
     def __init__(self, path):
         stream = open(path, 'rb')
         self.parsed_bytes = []
@@ -27,16 +30,22 @@ class LAXParser:
             self.parsed_bytes.append(unpack)
 
     def header(self):
+        raise NotImplementedError('To be implemented.')
         pass
 
     @property
     def cells(self):
-        # starting position of intervals for first cell
-        start_pos = 19 # Index of first interval
+        """
+        :return: A dictionary of cell_index: [cell_intervals] key, value pairs.
+        """
+
+        # Index of first interval
+        start_pos = 19
 
         cell_dict = {}
+
         n = self.parsed_bytes[17] # The number of intervals of the first cell
-        for i in range(self.number_cells-1): #for now
+        for i in range(self.number_cells-1):
             cell_intervals = self.parsed_bytes[start_pos:start_pos + n * 2]
             cell_id = self.parsed_bytes[start_pos-3]
             cell_dict[cell_id] = cell_intervals
@@ -46,7 +55,15 @@ class LAXParser:
 
         return cell_dict
 
-    def create_indices(self, cell_index):
+    def create_point_indices(self, cell_index):
+        """
+        The values in the self.cells dictionary are the raw intervals. This function converts those raw intervals
+        into a set of point indices that can be passed to the `laspy.file.File` memory map.
+
+        :param cell_index: The cell index to generate point indices for.
+        :return: An `ndarray` of indices of points associated with the cell specified by `cell_index`
+        """
+
         indices = []
         i = 0
         bounds = self.cells[cell_index]
