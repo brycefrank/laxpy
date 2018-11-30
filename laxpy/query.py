@@ -61,15 +61,10 @@ class IndexedLAS(File):
         :param scale: Scale the output points using the header?
         :return:
         """
-
         point_indices = self.parser.create_point_indices(cell_index)
+        return point_indices
 
-        if scale:
-            return self._scale_points(self.points[point_indices])
-        else:
-            return self.points[point_indices]
-
-    def query_polygon(self, q_polygon):
+    def query_polygon(self, q_polygon, scale=False):
         point_indices = []
         for cell_index, polygon in self.tree.cell_polygons.items():
             if polygon.intersects(q_polygon):
@@ -85,7 +80,11 @@ class IndexedLAS(File):
 
         keep = clip.ray_trace(x, y, q_polygon)
 
-        return self.points[point_indices[keep]]
+        if scale:
+            return self._scale_points(self.points[point_indices[keep]])
+        else:
+            return self.points[point_indices[keep]]
+
 
 
     def query_bounding_box(self, bbox):
