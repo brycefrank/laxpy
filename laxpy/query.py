@@ -67,7 +67,7 @@ class IndexedLAS(File):
     def query_polygon(self, q_polygon, scale=False):
         point_indices = []
         for cell_index, polygon in self.tree.cell_polygons.items():
-            if polygon.intersects(q_polygon):
+            if q_polygon.intersects(polygon):
                 point_indices.append(self.parser.create_point_indices(cell_index))
 
         point_indices = np.unique(np.concatenate(point_indices))
@@ -84,8 +84,6 @@ class IndexedLAS(File):
             return self._scale_points(self.points[point_indices[keep]])
         else:
             return self.points[point_indices[keep]]
-
-
 
     def query_bounding_box(self, bbox):
         """

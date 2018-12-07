@@ -103,7 +103,7 @@ class LAXTree:
             x_width = x_width / 2
             y_width = y_width / 2
 
-        return((minx, minx+x_width, miny, miny + y_width))
+        return((minx, minx+(x_width*2), miny, miny + (y_width*2)))
 
     @property
     def cell_polygons(self):
@@ -133,3 +133,20 @@ class LAXTree:
         plt.xlim(self.lax_parser.bbox[0], self.lax_parser.bbox[1])
         plt.ylim(self.lax_parser.bbox[2], self.lax_parser.bbox[3])
         plt.show()
+
+    def to_gdf(self, crs):
+        """
+        Exports the geometries to shapefile for debugging purposes.
+        """
+        import geopandas as gpd
+        import pandas as pd
+
+        df = pd.DataFrame({'bbox':list(self.cell_polygons.values()),'id': list(self.cell_polygons.keys())})
+        gdf = gpd.GeoDataFrame(df)
+        gdf = gdf.set_geometry('bbox')
+        gdf.crs = crs
+
+        return(gdf)
+
+
+

@@ -7,7 +7,7 @@ presence of `.lax` files that match the name of the `.las` file you are interest
 
 ## Release Status
 
-Current Release: 0.0.1
+Current Release: 0.0.2
 
 Status: `laxpy` is currently under development.
 
