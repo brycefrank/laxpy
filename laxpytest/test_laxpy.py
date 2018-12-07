@@ -36,8 +36,8 @@ class LAXTreeTestCase(unittest.TestCase):
         self.assertListEqual(self.test_tree.trace_back(14), [(3,2), (0,3)])
 
     def test_get_cell_bbox(self):
-        self.assertEqual(self.test_tree.get_cell_bbox(14), (405020.0, 405060.0,
-                                                       3276400.0, 3276440.0))
+        self.assertEqual(self.test_tree.get_cell_bbox(14), (405020.0, 405100.0,
+                                                       3276400.0, 3276480.0))
 
     def test_cell_polygons(self):
         self.test_tree.cell_polygons
