@@ -85,7 +85,6 @@ def init_lax(path):
 
     for binary in lasindex_names:
         in_path = [os.path.isfile(os.path.join(x, binary)) for x in os.environ['PATH'].split(os.pathsep)]
-        print(in_path)
         if any(in_path):
             lasindex_binary = binary
             break

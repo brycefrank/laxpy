@@ -33,26 +33,6 @@ class IndexedLAS(File):
         self.parser = file.LAXParser(self.lax_path)
         self.tree = tree.LAXTree(self.parser)
 
-    def _scale_points(self, points):
-        """
-        Scales a set of queried points using the header offset and scale functions.
-
-        :param points:
-        :return: A set of scaled points.
-        """
-
-        x = ((points['point']['X'] * self.header.scale[0]) + self.header.offset[0])
-        y = (points['point']['Y'] * self.header.scale[1]) + self.header.offset[1]
-        z = (points['point']['Z'] * self.header.scale[2]) + self.header.offset[2]
-
-        # Get list of columns that aren't X Y or Z
-        avoid = ['X', 'Y', 'Z']
-        other_columns = [column for column in points['point'].dtype.fields.keys() if column not in avoid]
-
-        # TODO is there a way to avoid copying? Replace fields directly?
-        out_points = points['point'][other_columns].copy()
-        return append_fields(out_points, ('x', 'y', 'z'), (x, y, z))
-
     def _query_cell(self, cell_index, scale=False):
         """
         Returns the points of a given cell index. This is generally used internally.
@@ -64,11 +44,13 @@ class IndexedLAS(File):
         point_indices = self.parser.create_point_indices(cell_index)
         return point_indices
 
+    #@profile
     def query_polygon(self, q_polygon, scale=False):
         point_indices = []
         for cell_index, polygon in self.tree.cell_polygons.items():
             if q_polygon.intersects(polygon):
                 point_indices.append(self.parser.create_point_indices(cell_index))
+
 
         point_indices = np.unique(np.concatenate(point_indices))
 
@@ -80,10 +62,7 @@ class IndexedLAS(File):
 
         keep = clip.ray_trace(x, y, q_polygon)
 
-        if scale:
-            return self._scale_points(self.points[point_indices[keep]])
-        else:
-            return self.points[point_indices[keep]]
+        self.reader._pmap = self.points[np.where(keep)[0]]
 
     def query_bounding_box(self, bbox):
         """
