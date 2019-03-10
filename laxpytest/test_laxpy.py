@@ -63,14 +63,4 @@ class IndexedLASTestCase(unittest.TestCase):
         self.test_ix_las.map_polygon(test_poly2)
         self.assertEqual(len(self.test_ix_las.points), 1141)
 
-    def test_twice_clip(self):
-        """
-        For my own mental health, I need to check if double clips work correctly (i.e. multiple clips over the same
-        IndexedLAS object).
-        """
-        from shapely.geometry import Polygon
-        minx, maxx, miny, maxy = (405000, 405300, 3276400, 3276450)
-        test_poly = Polygon([(minx, miny), (minx, maxy), (maxx, maxy), (maxx, miny)])
-        self.assertEqual(len(self.test_ix_las.query_polygon(test_poly)), 51841)
-
 
