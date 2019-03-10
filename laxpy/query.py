@@ -19,10 +19,12 @@ class IndexedLAS(File):
     :param path: The path of a `.las` file to index.
     """
     def __init__(self, path):
-        super().__init__(path)
+        self.path = path
+        self.original = True # Is this the original instantiation?
+        super().__init__(self.path)
 
         # Copy original points memory map
-        self.original_points = copy.copy(self.reader.data_provider._pmap)
+        #self.original_points = copy.copy(self.reader.data_provider._pmap)
 
         # Check if matching `.lax` file is present.
         parent_dir = os.path.join(os.path.abspath(os.path.join(self.filename, os.pardir)))
@@ -35,6 +37,12 @@ class IndexedLAS(File):
         # Parse the lax file and generate the tree
         self.parser = file.LAXParser(self.lax_path)
         self.tree = tree.LAXTree(self.parser)
+
+    def undo_map(self):
+        """
+        Resets the point map back to the original file.
+        """
+        super().__init__(self.path)
 
     def _query_cell(self, cell_index):
         """
@@ -57,6 +65,10 @@ class IndexedLAS(File):
 
         :param q_polygon: A shapely polygon to query.
         """
+
+        if self.original == False: # Then clip has already been ran, reinstantiate.
+            self.undo_map()
+
         point_indices = []
         for cell_index, polygon in self.tree.cell_polygons.items():
             if q_polygon.intersects(polygon):
@@ -68,9 +80,9 @@ class IndexedLAS(File):
         x_scale, y_scale, z_scale = self.header.scale
         x_off, y_off, z_off = self.header.offset
 
-        x = (x_scale * self.original_points[point_indices]['point']['X']) + x_off
-        y = (y_scale * self.original_points[point_indices]['point']['Y']) + y_off
+        x = (x_scale * self.points[point_indices]['point']['X']) + x_off
+        y = (y_scale * self.points[point_indices]['point']['Y']) + y_off
 
         keep = clip.ray_trace(x, y, q_polygon)
-
-        self.reader.data_provider._pmap = self.original_points[np.where(keep)[0]]
+        self.original = False
+        self.reader.data_provider._pmap = self.points[np.where(keep)[0]]
