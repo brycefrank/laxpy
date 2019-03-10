@@ -4,14 +4,20 @@ laxpy is a way to read and write `.lax` files generated from `lasindex` in Pytho
 the `laspy` codebase, but for now this standalone package can handle spatial queries in conjuction with `laspy` and 
 presence of `.lax` files that match the name of the `.las` file you are interested in querying.
 
+### Why Index?
+
+Indexing LiDAR data is only relevant if the entire file is not needed. This most frequently happens when LiDAR files need
+to be clipped using some geometry smaller than the original file extent. Indexing allows loading smaller chunks
+of the file into memory, rather than the whole thing, at the cost of some initial overhead.
+
+Whether or not indexing ultimately increases computational efficiency depends on the clipping geometry, and the structure
+and size of the LiDAR file.
 
 ## Release Status
 
-Current Release: 0.0.2
+Current Release: 0.1
 
-Status: `laxpy` is currently under development.
-
-**laxpy is in a development phase** with minimally working version (0.1.0) planned for December, 2018
+Status: `laxpy` is in a minimally working condition.
 
 ## Installation
 
@@ -27,16 +33,21 @@ pip install .
 
 ## Example
 
+### Clipping a Polygon
+
+`laxpy` clips a `shapely` polygon by adjusting the memory map (an internal mechanism in `laspy`) of the original reference object.
+Long story short, this is done in place in the following manner:
+
 ```{python}
 from laxpy import IndexedLAS
 
 my_las = IndexedLAS('my_las.las')
+my_las.map_polygon(my_shapely_polygon)
 
-# Return all points in the provided bounding box
-my_las.query_bounding_box()
-my_las.query_bounding_box((405000, 405300, 3276400, 3276450))
-
-# IndexedLAS inherits from laspy.file.File
+# Print the points within the polygon
 print(my_las.points)
 ```
+
+Note that an `IndexedLAS` object inherits directly from `laspy.file.File`, and all dimensions are available for querying,
+including `.x`, `.y`, etc. etc.
 
