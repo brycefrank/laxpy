@@ -7,6 +7,7 @@ from numpy.lib.recfunctions import append_fields
 from laxpy import file, tree, clip
 from shapely.geometry import Point, Polygon
 import numpy as np
+import copy
 
 class IndexedLAS(File):
     """
@@ -17,9 +18,13 @@ class IndexedLAS(File):
 
     :param path: The path of a `.las` file to index.
     """
-
     def __init__(self, path):
-        super().__init__(path)
+        self.path = path
+        self.original = True # Is this the original instantiation?
+        super().__init__(self.path)
+
+        # Copy original points memory map
+        #self.original_points = copy.copy(self.reader.data_provider._pmap)
 
         # Check if matching `.lax` file is present.
         parent_dir = os.path.join(os.path.abspath(os.path.join(self.filename, os.pardir)))
@@ -33,42 +38,42 @@ class IndexedLAS(File):
         self.parser = file.LAXParser(self.lax_path)
         self.tree = tree.LAXTree(self.parser)
 
-    def _scale_points(self, points):
+    def undo_map(self):
         """
-        Scales a set of queried points using the header offset and scale functions.
-
-        :param points:
-        :return: A set of scaled points.
+        Resets the point map back to the original file.
         """
+        super().__init__(self.path)
 
-        x = ((points['point']['X'] * self.header.scale[0]) + self.header.offset[0])
-        y = (points['point']['Y'] * self.header.scale[1]) + self.header.offset[1]
-        z = (points['point']['Z'] * self.header.scale[2]) + self.header.offset[2]
-
-        # Get list of columns that aren't X Y or Z
-        avoid = ['X', 'Y', 'Z']
-        other_columns = [column for column in points['point'].dtype.fields.keys() if column not in avoid]
-
-        # TODO is there a way to avoid copying? Replace fields directly?
-        out_points = points['point'][other_columns].copy()
-        return append_fields(out_points, ('x', 'y', 'z'), (x, y, z))
-
-    def _query_cell(self, cell_index, scale=False):
+    def _query_cell(self, cell_index):
         """
-        Returns the points of a given cell index. This is generally used internally.
+        Returns the point indices of a given cell index. This is generally used internally.
 
         :param cell_index:
-        :param scale: Scale the output points using the header?
         :return:
         """
+
         point_indices = self.parser.create_point_indices(cell_index)
         return point_indices
 
-    def query_polygon(self, q_polygon, scale=False):
+    #@profile
+    def map_polygon(self, q_polygon):
+        """
+        Sets the point mapping to the query polygon. Subsequent laspy-esque calls will therefore return only points
+        within the polygon. E.g. `my_las.x` will return only the x-values for points within the polygon, etc. This
+        modifies the object's reader point mapping in place. See `self.original_points` for a copy of the original
+        point mapping.
+
+        :param q_polygon: A shapely polygon to query.
+        """
+
+        if self.original == False: # Then clip has already been ran, reinstantiate.
+            self.undo_map()
+
         point_indices = []
         for cell_index, polygon in self.tree.cell_polygons.items():
             if q_polygon.intersects(polygon):
                 point_indices.append(self.parser.create_point_indices(cell_index))
+
 
         point_indices = np.unique(np.concatenate(point_indices))
 
@@ -79,25 +84,5 @@ class IndexedLAS(File):
         y = (y_scale * self.points[point_indices]['point']['Y']) + y_off
 
         keep = clip.ray_trace(x, y, q_polygon)
-
-        if scale:
-            return self._scale_points(self.points[point_indices[keep]])
-        else:
-            return self.points[point_indices[keep]]
-
-    def query_bounding_box(self, bbox):
-        """
-
-        :param bbox: A an iterable of bounding box coordinates in the format (minx, maxx, miny, maxy).
-        """
-
-        minx, maxx, miny, maxy = bbox
-        bbox_polygon = Polygon([(minx, miny), (minx, maxy), (maxx, maxy), (maxx, miny)])
-        return self.query_polygon(bbox_polygon)
-
-    def query_point(self, x, y):
-        # TODO could a point ever return more than one cell?
-        point = Point(x, y)
-        for cell_index, polygon in self.tree.cell_polygons.items():
-            if polygon.contains(point):
-                self._query_cell(cell_index)
+        self.original = False
+        self.reader.data_provider._pmap = self.points[np.where(keep)[0]]
