@@ -57,10 +57,10 @@ class IndexedLASTestCase(unittest.TestCase):
         test_poly2 = Polygon([(minx, miny), (minx, maxy), (maxx, maxy), (maxx, miny)])
 
         self.test_ix_las.map_polygon(test_poly1)
-        self.assertEqual(len(self.test_ix_las.points), 1260)
+        self.assertEqual(len(self.test_ix_las.points), 140455)
 
         # And one more time for mental health, map a polygon outside of the last one
         self.test_ix_las.map_polygon(test_poly2)
-        self.assertEqual(len(self.test_ix_las.points), 1141)
+        self.assertEqual(len(self.test_ix_las.points), 67814)
 
 

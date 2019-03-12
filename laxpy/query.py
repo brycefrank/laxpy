@@ -77,12 +77,5 @@ class IndexedLAS(File):
 
         point_indices = np.unique(np.concatenate(point_indices))
 
-        x_scale, y_scale, z_scale = self.header.scale
-        x_off, y_off, z_off = self.header.offset
-
-        x = (x_scale * self.points[point_indices]['point']['X']) + x_off
-        y = (y_scale * self.points[point_indices]['point']['Y']) + y_off
-
-        keep = clip.ray_trace(x, y, q_polygon)
         self.original = False
-        self.reader.data_provider._pmap = self.points[np.where(keep)[0]]
+        self.reader.data_provider._pmap = self.points[point_indices]
