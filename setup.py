@@ -15,6 +15,6 @@ setup(
             'shapely',
             'numpy',
             'numba'
-        ]
+        ],
     data = [('laxpytest/data'), ['test.las', 'test.lax']],
 )
