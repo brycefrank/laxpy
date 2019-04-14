@@ -1,3 +1,7 @@
+## 0.1.2
+
+- Fixed issue with missing dependencies on pip install
+
 ## 0.1
 
 Pre-release version.
