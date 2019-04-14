@@ -1,4 +1,0 @@
-laspy
-shapely
-numpy
-numba
