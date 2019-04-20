@@ -5,7 +5,7 @@ branch:
 python:
   - "3.6"
 install:
-  - pip install coveralls
+  - pip install coveralls numpy numba shapely laspy
   - pip install .
 script:
   - coverage run --source pyfor setup.py test
