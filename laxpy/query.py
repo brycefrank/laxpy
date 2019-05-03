@@ -77,5 +77,9 @@ class IndexedLAS(File):
 
         point_indices = np.unique(np.concatenate(point_indices))
 
-        self.original = False
-        self.reader.data_provider._pmap = self.points[point_indices]
+        if len(point_indices) > 0:
+            self.original = False
+            self.reader.data_provider._pmap = self.points[point_indices]
+        else:
+            import warnings
+            warnings.warn('The mapping returned no points.')
