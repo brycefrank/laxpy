@@ -1,3 +1,7 @@
+## 0.1.2a
+- Added warning for empty mappings.
+
+
 ## 0.1.2
 
 - Fixed issue with missing dependencies on pip install
