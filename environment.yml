@@ -1,0 +1,11 @@
+# An optional conda environment for running laxpy
+# this is used mainly for running the test suite in Travis-CI
+name: laxpy_env
+
+dependencies:
+  - numpy
+  - numba
+  - shapely
+  - conda-forge::lastools
+  - pip:
+      - laspy
