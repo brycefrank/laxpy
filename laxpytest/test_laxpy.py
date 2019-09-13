@@ -62,5 +62,3 @@ class IndexedLASTestCase(unittest.TestCase):
         # And one more time for mental health, map a polygon outside of the last one
         self.test_ix_las.map_polygon(test_poly2)
         self.assertEqual(len(self.test_ix_las.points), 67814)
-
-
