@@ -1,6 +1,11 @@
+## 0.1.6
+
+- Adding optional conda environment
+- Adding Windows testing on Travis
+- Reduced the structure of `file.init_lax` check for `lasindex` installation.
+
 ## 0.1.2a
 - Added warning for empty mappings.
-
 
 ## 0.1.2
 

@@ -15,9 +15,9 @@ and size of the LiDAR file.
 
 ## Release Status
 
-Current Release: 0.1
+Current Release: 0.1.6
 
-Status: `laxpy` is in a minimally working condition.
+Status: `laxpy` is in a stable condition.
 
 ## Installation
 

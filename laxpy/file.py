@@ -78,21 +78,11 @@ def init_lax(path):
     Creates a .lax file for a specified .las file. A simple wrapper for lasindex CLI tool.
     :return:
     """
-
-    # Mimicking laspy.base.read_compressed
-    lasindex_names = ['lasindex']
-    lasindex_binary = ''
-
-    for binary in lasindex_names:
-        in_path = [os.path.isfile(os.path.join(x, binary)) for x in os.environ['PATH'].split(os.pathsep)]
-        if any(in_path):
-            lasindex_binary = binary
-            break
-    else:
+    try:
+        prc = subprocess.Popen(["lasindex", "-i", path])
+        prc.communicate()
+    except:
         raise(FileNotFoundError, "lasindex was not found on the system")
-
-    prc = subprocess.Popen([lasindex_binary, "-i", path])
-    prc.communicate()
 
 
 
