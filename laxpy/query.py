@@ -75,8 +75,8 @@ class IndexedLAS(File):
                 point_indices.append(self.parser.create_point_indices(cell_index))
 
 
-        point_indices = np.unique(np.concatenate(point_indices))
         if len (point_indices) > 0:
+            point_indices = np.unique(np.concatenate(point_indices))
             self.original = False
             self.reader.data_provider._pmap = self.points[point_indices]
         else:

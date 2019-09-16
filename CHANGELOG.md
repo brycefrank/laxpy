@@ -1,3 +1,6 @@
+## 0.1.8
+- Fixing small bug in `query` that errored on an empty query.
+
 ## 0.1.6
 
 - Adding optional conda environment
