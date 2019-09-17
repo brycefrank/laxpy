@@ -1,20 +1,28 @@
 from laxpy import *
 import unittest
 import os
+import numpy as np
 
 data_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
 test_las = os.path.join(data_dir, 'test.las')
 test_lax = os.path.join(data_dir, 'test.lax')
+bad_lax = os.path.join(data_dir, 'bad_lax.lax')
 
 class LAXParserTestCase(unittest.TestCase):
     def setUp(self):
         self.test_parser = file.LAXParser(test_lax)
 
     def test_cells(self):
-        self.assertEqual(len(self.test_parser.cells), 39)
+        self.assertEqual(len(self.test_parser.cells), 40)
 
     def test_create_indices(self):
         self.test_parser.create_point_indices(14)
+
+    def test_cell_length_equal_to_parsed_length(self):
+        bad_parser = file.LAXParser(bad_lax)
+        bad_tree = tree.LAXTree(bad_parser)
+        bad_tree.to_gdf(crs=None).to_file("C:\\Users\\frankbr\\Desktop\\debug.shp")
+        self.assertEqual(bad_parser.number_cells, len(bad_parser.cells.keys()))
 
 class LAXTreeTestCase(unittest.TestCase):
     def setUp(self):
@@ -62,3 +70,4 @@ class IndexedLASTestCase(unittest.TestCase):
         # And one more time for mental health, map a polygon outside of the last one
         self.test_ix_las.map_polygon(test_poly2)
         self.assertEqual(len(self.test_ix_las.points), 67814)
+

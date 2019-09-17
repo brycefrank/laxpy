@@ -45,13 +45,15 @@ class LAXParser:
         cell_dict = {}
 
         n = self.parsed_bytes[17] # The number of intervals of the first cell
-        for i in range(self.number_cells-1):
+        for i in range(self.number_cells):
             cell_intervals = self.parsed_bytes[start_pos:start_pos + n * 2]
             cell_id = self.parsed_bytes[start_pos-3]
             cell_dict[cell_id] = cell_intervals
 
             start_pos = (start_pos + n*2 + 3)
-            n = self.parsed_bytes[start_pos - 2]
+
+            if (i != self.number_cells - 1):
+                n = self.parsed_bytes[start_pos - 2]
 
         return cell_dict
 
