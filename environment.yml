@@ -6,6 +6,7 @@ dependencies:
   - numpy
   - numba
   - shapely
+  - geopandas
   - conda-forge::lastools
   - pip:
       - laspy
