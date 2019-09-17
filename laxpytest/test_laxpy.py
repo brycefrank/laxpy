@@ -21,7 +21,6 @@ class LAXParserTestCase(unittest.TestCase):
     def test_cell_length_equal_to_parsed_length(self):
         bad_parser = file.LAXParser(bad_lax)
         bad_tree = tree.LAXTree(bad_parser)
-        bad_tree.to_gdf(crs=None).to_file("C:\\Users\\frankbr\\Desktop\\debug.shp")
         self.assertEqual(bad_parser.number_cells, len(bad_parser.cells.keys()))
 
 class LAXTreeTestCase(unittest.TestCase):
