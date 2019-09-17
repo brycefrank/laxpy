@@ -1,3 +1,6 @@
+## 0.1.9
+- Hotfix for empty cell problem, fixes #6
+
 ## 0.1.8
 - Fixing small bug in `query` that errored on an empty query.
 
