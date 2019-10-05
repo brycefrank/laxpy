@@ -29,6 +29,8 @@ class LAXParser:
             unpack = struct.unpack('I', stream.read(4))[0]
             self.parsed_bytes.append(unpack)
 
+        stream.close()
+
     def header(self):
         raise NotImplementedError('To be implemented.')
         pass

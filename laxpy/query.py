@@ -55,7 +55,6 @@ class IndexedLAS(File):
         point_indices = self.parser.create_point_indices(cell_index)
         return point_indices
 
-    #@profile
     def map_polygon(self, q_polygon):
         """
         Sets the point mapping to the query polygon. Subsequent laspy-esque calls will therefore return only points
