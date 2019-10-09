@@ -1,9 +1,8 @@
 from setuptools import setup
-from laxpy import __version__
 
 setup(
     name = 'laxpy',
-    version = __version__,
+    version = '0.2.2',
     description = 'A Python API for .lax files',
     license = 'MIT',
     author = 'Bryce Frank',
