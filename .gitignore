@@ -3,3 +3,12 @@
 ################################################################################
 
 /.idea
+/.vs
+/build/lib
+/dist
+/laxpy/__pycache__
+/laxpy.egg-info/top_level.txt
+/laxpy.egg-info/SOURCES.txt
+/laxpy.egg-info/requires.txt
+/laxpy.egg-info/PKG-INFO
+/laxpy.egg-info/dependency_links.txt
