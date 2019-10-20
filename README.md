@@ -29,6 +29,9 @@ pip install laxpy
 git clone https://github.com/brycefrank/laxpy.git
 cd laxpy
 pip install .
+
+# via conda
+conda install laxpy -n <your environment> -c conda-forge
 ```
 
 ## Example
