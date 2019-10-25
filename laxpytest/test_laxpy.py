@@ -4,8 +4,8 @@ import os
 import numpy as np
 
 data_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
-test_las = os.path.join(data_dir, 'test.las')
-test_lax = os.path.join(data_dir, 'test.lax')
+test_las = os.path.join(data_dir, 'my_las.las')
+test_lax = os.path.join(data_dir, 'my_las.lax')
 bad_lax = os.path.join(data_dir, 'bad_lax.lax')
 
 class LAXParserTestCase(unittest.TestCase):
