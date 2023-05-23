@@ -58,7 +58,7 @@ class LAXTree:
         try:
             parent_lb = self.level_edges[cell_level - 1][0]
             parent_index = (parent_lb + parent_offset) - 1
-            return np.int(parent_index)
+            return int(parent_index)
         except KeyError: # we are at the root
             return 0
 
