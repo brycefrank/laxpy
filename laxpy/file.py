@@ -24,7 +24,7 @@ class LAXParser:
         stream.seek(15 * 4)
         self.number_cells = struct.unpack('I', stream.read(4))[0]
 
-        for i in range(0, np.int(os.stat(path).st_size/4)):
+        for i in range(0, int(os.stat(path).st_size/4)):
             stream.seek(i*4)
             unpack = struct.unpack('I', stream.read(4))[0]
             self.parsed_bytes.append(unpack)
