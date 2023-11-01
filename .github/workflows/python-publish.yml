@@ -36,7 +36,7 @@ jobs:
       
     - name: Publish package (Test PyPI)
       uses: pypa/gh-action-pypi-publish@release/v1
-      if: true
+      if: false
       with:
         user: __token__
         password: ${{ secrets.PYPI_TEST_API_TOKEN }}
@@ -44,7 +44,7 @@ jobs:
       
     - name: Publish package (PyPI)
       uses: pypa/gh-action-pypi-publish@release/v1
-      if: false
+      if: true
       with:
         user: __token__
         password: ${{ secrets.PYPI_API_TOKEN }}
