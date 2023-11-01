@@ -1,3 +1,12 @@
+## 0.2.3
+- Updated deprecated aliases `np.int` to builtin `int`s
+
+## 0.2.2
+
+## 0.2.1
+
+## 0.2.0
+
 ## 0.1.9
 - Hotfix for empty cell problem, fixes #6
 

@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name = 'laxpy',
-    version = '0.2.2',
+    version = '0.2.3',
     description = 'A Python API for .lax files',
     license = 'MIT',
     author = 'Bryce Frank',
